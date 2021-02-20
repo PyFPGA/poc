@@ -5,6 +5,9 @@ COMMAND=xtclsh
 flow params:
 	$(COMMAND) $@.tcl
 
+version:
+	echo "puts \$$tcl_version" | xtclsh
+
 clean:
 	rm -fr \
 	*.bgn *.bit *.bld *.cmd_log *.drc *.lso *.ncd *.ngc *.ngd *.ngr      \
