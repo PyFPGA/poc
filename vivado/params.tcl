@@ -19,8 +19,9 @@ remove_files [get_files]
 
 add_files ../resources/vhdl/generics.vhdl
 set_property top Params [current_fileset]
-# TODO: add REA=1.1 (possible?)
-set_property "generic" "BOO=true INT=255 LOG=1'b1 VEC=8'b11111111 STR=WXYZ" -objects [get_filesets sources_1]
+# NOTE: support to specify a REAL generic (VHDL) was added into the Vivado 2020.2 version
+# https://forums.xilinx.com/t5/Vivado-TCL-Community/How-to-specify-a-REAL-generic-in-Vivado/m-p/1209088#M9581
+set_property "generic" "BOO=true INT=255 LOG=1'b1 VEC=8'b11111111 STR=WXYZ REA=1.1" -objects [get_filesets sources_1]
 
 reset_run synth_1
 launch_runs synth_1
