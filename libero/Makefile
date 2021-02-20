@@ -1,9 +1,9 @@
 #!/usr/bin/make
 
-COMMAND="libero SCRIPT:"
+COMMAND=libero SCRIPT:
 
 flow include:
 	$(COMMAND)$@.tcl
 
 clean:
-	rm -fr libero
+	rm -fr libero \"

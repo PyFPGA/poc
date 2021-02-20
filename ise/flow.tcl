@@ -5,10 +5,12 @@ project set device  xc6slx9
 project set package csg324
 project set speed   -2
 
-xfile add ../../hdl/blinking.vhdl
-xfile add ../../examples/ise/s6micro.ucf
+xfile add ../resources/vhdl/blink.vhdl
+xfile add ../resources/constraints/s6micro/clk.ucf
+xfile add ../resources/constraints/s6micro/led.ucf
+xfile add ../resources/constraints/s6micro/clk.xcf
 
-project set top Blinking
+project set top Blink
 
 process run "Synthesize" -force rerun
 

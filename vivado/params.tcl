@@ -6,7 +6,7 @@ set_property "part" xc7z010-1-clg400 [current_project]
 # you must specify the value using the Verilog bit format, rather than
 # standard VHDL format.
 
-add_files ../../hdl/fakes/parameters.v
+add_files ../resources/verilog/parameters.v
 set_property top Params [current_fileset]
 set_property "generic" "BOO=1 INT=255 LOG=1'b1 VEC=8'b11111111 STR=WXYZ REA=1.1" -objects [get_filesets sources_1]
 
@@ -17,10 +17,11 @@ wait_on_run synth_1
 # To avoid re-synthesis of the Verilog version
 remove_files [get_files]
 
-add_files ../../hdl/fakes/generics.vhdl
+add_files ../resources/vhdl/generics.vhdl
 set_property top Params [current_fileset]
-# TODO: add REA=1.1 (possible?)
-set_property "generic" "BOO=true INT=255 LOG=1'b1 VEC=8'b11111111 STR=WXYZ" -objects [get_filesets sources_1]
+# NOTE: support to specify a REAL generic (VHDL) was added into the Vivado 2020.2 version
+# https://forums.xilinx.com/t5/Vivado-TCL-Community/How-to-specify-a-REAL-generic-in-Vivado/m-p/1209088#M9581
+set_property "generic" "BOO=true INT=255 LOG=1'b1 VEC=8'b11111111 STR=WXYZ REA=1.1" -objects [get_filesets sources_1]
 
 reset_run synth_1
 launch_runs synth_1
