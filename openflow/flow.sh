@@ -1,89 +1,35 @@
 #!/bin/bash
 
-DOCKER="docker run --rm -v $HOME:$HOME -w $PWD"
+set -e
 
-FLAGS="--std=08 -fsynopsys -fexplicit -frelaxed"
+DOCKER="docker run --rm -v $HOME:$HOME -w $PWD"
 
 function msg () { tput setaf 6; echo "$1"; tput sgr0; }
 
 ###############################################################################
 
-msg "* VHDL with GHDL --synth"
-
-$DOCKER ghdl/synth:beta /bin/bash -c "
-ghdl -a $FLAGS --work=examples ../../hdl/blinking.vhdl
-ghdl -a $FLAGS --work=examples ../../hdl/examples_pkg.vhdl
-ghdl -a $FLAGS ../../hdl/top.vhdl
-ghdl --synth $FLAGS Top
-"
-
-rm -fr *.cf
-
-#################################################################################
-
-msg "* Verilog with Yosys"
-
-$DOCKER ghdl/synth:beta yosys -Q -p '
-verilog_defaults -add -I../../hdl/headers1;
-verilog_defaults -add -I../../hdl/headers2;
-read_verilog -defer ../../hdl/blinking.v;
-synth_xilinx -top Blinking -family xc7;
-write_edif -pvector bra yosys.edif
-'
-
-rm -fr *.edif
-
-#################################################################################
-
-msg "* VHDL with GHDL + ghdl-yosys-plugin + Yosys"
-
-$DOCKER ghdl/synth:beta /bin/bash -c "
-ghdl -a $FLAGS --work=examples ../../hdl/blinking.vhdl
-ghdl -a $FLAGS --work=examples ../../hdl/examples_pkg.vhdl
-ghdl -a $FLAGS ../../hdl/top.vhdl
-yosys -Q -m ghdl -p '
-ghdl $FLAGS Top;
-synth_xilinx -family xc7;
-write_edif -pvector bra yosys.edif
-'"
-
-rm -fr *.cf *.edif
-
-#################################################################################
-
-msg "* VHDL with ghdl-yosys-plugin + Yosys"
-
-$DOCKER ghdl/synth:beta /bin/bash -c "
-yosys -Q -m ghdl -p '
-ghdl $FLAGS --work=examples ../../hdl/blinking.vhdl ../../hdl/examples_pkg.vhdl ../../hdl/top.vhdl -e Top;
-synth_xilinx -family xc7;
-write_edif -pvector bra yosys.edif
-'"
-
-rm -fr *.edif
-
-##################################################################################
-
 msg "* Yosys + nextpnr + IceStorm"
 
-$DOCKER ghdl/synth:beta /bin/bash -c "
+cat ../resources/constraints/edu-ciaa-fpga/clk.pcf ../resources/constraints/edu-ciaa-fpga/led.pcf > edu-ciaa-fpga.pcf
+
+$DOCKER hdlc/ghdl:yosys /bin/bash -c "
 yosys -Q -p '
-verilog_defaults -add -I../../hdl/headers1;
-verilog_defaults -add -I../../hdl/headers2;
-read_verilog -defer ../../hdl/blinking.v;
-synth_ice40 -top Blinking -json blinking.json
+read_verilog -defer ../resources/verilog/blink.v;
+synth_ice40 -top Blink -json blink.json
 '"
 
-$DOCKER ghdl/synth:nextpnr-ice40  /bin/bash -c "
-nextpnr-ice40 --json blinking.json --hx8k --package tq144:4k --pcf ../../examples/yosys-nextpnr/edu-ciaa-fpga.pcf --asc blinking.asc
+$DOCKER hdlc/nextpnr:ice40  /bin/bash -c "
+nextpnr-ice40 --json blink.json --hx8k --package tq144:4k --pcf edu-ciaa-fpga.pcf --asc blink.asc
 "
 
-$DOCKER ghdl/synth:icestorm /bin/bash -c "
-icepack blinking.asc blinking.bit
-icetime -d hx8k -mtr blinking.rpt blinking.asc
+rm -f edu-ciaa-fpga.pcf
+
+$DOCKER hdlc/icestorm /bin/bash -c "
+icepack blink.asc blink.bit
+icetime -d hx8k -mtr blink.rpt blink.asc
 "
 
-# $DOCKER --device /dev/bus/usb ghdl/synth:prog iceprog blinking.bit
+# $DOCKER --device /dev/bus/usb hdlc/prog iceprog blink.bit
 
 rm -fr *.asc *.bit *.json *.rpt
 
@@ -91,23 +37,21 @@ rm -fr *.asc *.bit *.json *.rpt
 
 msg "* Yosys + nextpnr + Trellis"
 
-$DOCKER ghdl/synth:beta /bin/bash -c "
+$DOCKER hdlc/ghdl:yosys /bin/bash -c "
 yosys -Q -p '
-verilog_defaults -add -I../../hdl/headers1;
-verilog_defaults -add -I../../hdl/headers2;
-read_verilog -defer ../../hdl/blinking.v;
-synth_ecp5 -top Blinking -json blinking.json
+read_verilog -defer ../resources/verilog/blink.v;
+synth_ecp5 -top Blink -json blink.json
 '"
 
-$DOCKER ghdl/synth:nextpnr-ecp5 /bin/bash -c "
-nextpnr-ecp5 --json blinking.json --25k --package CSFBGA285 --lpf ../../examples/yosys-nextpnr/orangecrab_r0.2.lpf --textcfg blinking.config
+$DOCKER hdlc/nextpnr:ecp5 /bin/bash -c "
+nextpnr-ecp5 --json blink.json --25k --package CSFBGA285 --lpf ../resources/constraints/orangecrab/clk.lpf --lpf ../resources/constraints/orangecrab/led.lpf --textcfg blink.config
 "
 
-$DOCKER ghdl/synth:trellis /bin/bash -c "
-ecppack --svf blinking.svf blinking.config blinking.bit
+$DOCKER hdlc/prjtrellis /bin/bash -c "
+ecppack --svf blink.svf blink.config blink.bit
 "
+
+# $DOCKER --device /dev/bus/usb hdlc/prog openocd -f ${TRELLIS}/misc/openocd/ecp5-evn.cfg -c "transport select jtag; init; svf blink.svf; exit"
+# tinyprog -p aux.bit
 
 rm -fr *.bit *.config *.json *.svf
-
-# $DOCKER --device /dev/bus/usb ghdl/synth:prog openocd -f ${TRELLIS}/misc/openocd/ecp5-evn.cfg -c "transport select jtag; init; svf blinking.svf; exit"
-# tinyprog -p aux.bit

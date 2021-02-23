@@ -6,28 +6,32 @@ FLAGS="--std=08 -fsynopsys -fexplicit -frelaxed"
 
 function msg () { tput setaf 6; echo "$1"; tput sgr0; }
 
-msg "* Alternative 1: blinking.vhdl + top.v"
+###############################################################################
 
-$DOCKER ghdl/synth:beta /bin/bash -c "
-ghdl -a blinking.vhdl
-yosys -Q -m ghdl -p '
-ghdl Blinking;
-read_verilog top.v;
-synth_ice40 -top Top -json blinking.json
-'" > /dev/null
+msg "* Under Constructions"
+
+#msg "* Alternative 1: blink.vhdl + top.v"
+
+#$DOCKER hdlc/ghdl:yosys /bin/bash -c "
+#ghdl -a ../resources/vhdl/blink.vhdl
+#yosys -Q -m ghdl -p '
+#ghdl Blink;
+#read_verilog ../resources/verilog/top.v;
+#synth_ice40 -top Top -json blink.json
+#'" > /dev/null
+
+##rm -fr *.cf *.edif *.json
+
+#msg "* Alternative 2: blink.v + top.vhdl"
+
+#$DOCKER hdlc/ghdl:yosys /bin/bash -c "
+#yosys -Q -m ghdl -p '
+#ghdl --std=08 ../resources/vhdl/top.vhdl -e ;
+#read_verilog ../resources/verilog/blink.v;
+#synth_ice40 -top Top -json blink.json
+#'" > /dev/null
 
 #rm -fr *.cf *.edif *.json
-
-msg "* Alternative 2: blinking.v + top.vhdl"
-
-$DOCKER ghdl/synth:beta /bin/bash -c "
-yosys -Q -m ghdl -p '
-ghdl --std=08 top.vhdl -e ;
-read_verilog blinking.v;
-synth_ice40 -top Top -json blinking.json
-'" > /dev/null
-
-rm -fr *.cf *.edif *.json
 
 #DOCKER="docker run --rm -v $HOME:$HOME -w $PWD"
 
@@ -86,3 +90,32 @@ rm -fr *.cf *.edif *.json
 #'"
 
 #rm -fr *.cf *.edif
+
+###############################################################################
+
+#msg "* VHDL with GHDL + ghdl-yosys-plugin + Yosys"
+
+#$DOCKER hdlc/ghdl:yosys /bin/bash -c "
+#ghdl -a $FLAGS --work=blink_lib ../resources/vhdl/blink.vhdl
+#ghdl -a $FLAGS --work=blink_lib ../resources/vhdl/blink_pkg.vhdl
+#ghdl -a $FLAGS ../resources/vhdl/top.vhdl
+#yosys -Q -m ghdl -p '
+#ghdl $FLAGS Top;
+#synth_xilinx -family xc7;
+#write_edif -pvector bra yosys.edif
+#'"
+
+#rm -fr *.cf *.edif
+
+##################################################################################
+
+#msg "* VHDL with ghdl-yosys-plugin + Yosys"
+
+#$DOCKER hdlc/ghdl:yosys /bin/bash -c "
+#yosys -Q -m ghdl -p '
+#ghdl $FLAGS --work=blink_lib ../resources/vhdl/blink.vhdl ../resources/vhdl/blink_pkg.vhdl ../resources/vhdl/top.vhdl -e Top;
+#synth_xilinx -family xc7;
+#write_edif -pvector bra yosys.edif
+#'"
+
+#rm -fr *.edif
