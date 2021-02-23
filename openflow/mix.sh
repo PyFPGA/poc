@@ -1,121 +1,54 @@
 #!/bin/bash
 
+set -e
+
 DOCKER="docker run --rm -v $HOME:$HOME -w $PWD"
 
 FLAGS="--std=08 -fsynopsys -fexplicit -frelaxed"
 
 function msg () { tput setaf 6; echo "$1"; tput sgr0; }
 
-###############################################################################
-
-msg "* Under Constructions"
-
-#msg "* Alternative 1: blink.vhdl + top.v"
-
-#$DOCKER hdlc/ghdl:yosys /bin/bash -c "
-#ghdl -a ../resources/vhdl/blink.vhdl
-#yosys -Q -m ghdl -p '
-#ghdl Blink;
-#read_verilog ../resources/verilog/top.v;
-#synth_ice40 -top Top -json blink.json
-#'" > /dev/null
-
-##rm -fr *.cf *.edif *.json
-
-#msg "* Alternative 2: blink.v + top.vhdl"
-
-#$DOCKER hdlc/ghdl:yosys /bin/bash -c "
-#yosys -Q -m ghdl -p '
-#ghdl --std=08 ../resources/vhdl/top.vhdl -e ;
-#read_verilog ../resources/verilog/blink.v;
-#synth_ice40 -top Top -json blink.json
-#'" > /dev/null
-
-#rm -fr *.cf *.edif *.json
-
-#DOCKER="docker run --rm -v $HOME:$HOME -w $PWD"
-
-#FLAGS="--std=08 -fsynopsys -fexplicit -frelaxed"
-
-#function msg () { tput setaf 6; echo "$1"; tput sgr0; }
-
-#msg "* Alternative 1: blinking.vhdl + top.v"
-
-#$DOCKER ghdl/synth:beta /bin/bash -c "
-#ghdl -a blinking.vhdl
-#yosys -Q -m ghdl -p '
-#read_verilog top.v;
-#synth_ice40 -top Top -json blinking.json
-#'"
-
-#rm -fr *.cf *.edif *.json
-
-#msg "* Alternative 2: blinking.vhdl + top.v"
-
-#$DOCKER ghdl/synth:beta /bin/bash -c "
-#ghdl -a blinking.vhdl
-#yosys -Q -m ghdl -p '
-#read_verilog top.v;
-#ghdl Top
-#'"
-
-#rm -fr *.cf *.edif
-
-#msg "* Alternative 3: blinking.vhdl + top.v"
-
-#$DOCKER ghdl/synth:beta /bin/bash -c "
-#yosys -Q -m ghdl -p '
-#ghdl blinking.vhdl;
-#read_verilog top.v
-#'"
-
-#rm -fr *.cf *.edif
-
-#msg "* Alternative 4: blinking.vhdl + top.v"
-
-#$DOCKER ghdl/synth:beta /bin/bash -c "
-#yosys -Q -m ghdl -p '
-#read_verilog top.v;
-#ghdl blinking.vhdl -e Top
-#'"
-
-#rm -fr *.cf *.edif
-
-#msg "* Alternative 5: blinking.v + top.vhdl"
-
-#$DOCKER ghdl/synth:beta /bin/bash -c "
-#yosys -Q -m ghdl -p '
-#read_verilog blinking.v;
-#ghdl top.vhdl -e Top
-#'"
-
-#rm -fr *.cf *.edif
+function synth () {
+$DOCKER hdlc/ghdl:yosys /bin/bash -c "
+yosys -Q -m ghdl -p '
+ghdl $FLAGS $1 -e;
+read_verilog $2;
+synth_ice40 -top $3 -json blink.json
+'" > /dev/null
+}
 
 ###############################################################################
 
-#msg "* VHDL with GHDL + ghdl-yosys-plugin + Yosys"
+msg "* Verilog Top"
+synth "../resources/mix/blink.vhdl" "../resources/mix/top.v" "Top"
 
-#$DOCKER hdlc/ghdl:yosys /bin/bash -c "
-#ghdl -a $FLAGS --work=blink_lib ../resources/vhdl/blink.vhdl
-#ghdl -a $FLAGS --work=blink_lib ../resources/vhdl/blink_pkg.vhdl
-#ghdl -a $FLAGS ../resources/vhdl/top.vhdl
-#yosys -Q -m ghdl -p '
-#ghdl $FLAGS Top;
-#synth_xilinx -family xc7;
-#write_edif -pvector bra yosys.edif
-#'"
+msg "* VHDL Top"
+synth "../resources/mix/top.vhdl" "../resources/mix/blink.v" "Top"
 
-#rm -fr *.cf *.edif
+###############################################################################
 
-##################################################################################
+msg "* Verilog Top (alternative)"
 
-#msg "* VHDL with ghdl-yosys-plugin + Yosys"
+$DOCKER hdlc/ghdl:yosys /bin/bash -c "
+ghdl -a ../resources/mix/blink.vhdl
+yosys -Q -m ghdl -p '
+ghdl Blink;
+read_verilog ../resources/mix/top.v;
+synth_ice40 -top Top -json blink.json
+'" > /dev/null
 
-#$DOCKER hdlc/ghdl:yosys /bin/bash -c "
-#yosys -Q -m ghdl -p '
-#ghdl $FLAGS --work=blink_lib ../resources/vhdl/blink.vhdl ../resources/vhdl/blink_pkg.vhdl ../resources/vhdl/top.vhdl -e Top;
-#synth_xilinx -family xc7;
-#write_edif -pvector bra yosys.edif
-#'"
+rm -fr *.cf *.edif *.json
 
-#rm -fr *.edif
+msg "* VHDL Top (alternative)"
+
+$DOCKER hdlc/ghdl:yosys /bin/bash -c "
+ghdl -a $FLAGS --work=blink_lib ../resources/vhdl/blink.vhdl
+ghdl -a $FLAGS --work=blink_lib ../resources/vhdl/blink_pkg.vhdl
+ghdl -a $FLAGS ../resources/vhdl/top.vhdl
+yosys -Q -m ghdl -p '
+ghdl $FLAGS Top;
+synth_xilinx -family xc7;
+write_edif -pvector bra yosys.edif
+'" > /dev/null
+
+rm -fr *.cf *.edif *.json
