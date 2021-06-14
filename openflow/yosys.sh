@@ -19,3 +19,12 @@ write_edif -pvector bra yosys.edif
 '
 
 rm -fr *.edif
+
+###############################################################################
+
+msg "* Parameters in Yosys"
+
+$DOCKER hdlc/ghdl:yosys yosys -Q -p "
+read_verilog -defer ../resources/verilog/parameters.v;
+chparam -set BOO 1 -set INT 255 -set LOG 1 -set VEC 8'b11111111 -set STR \"WXYZ\" -set REA \"1.1\" Params
+"
