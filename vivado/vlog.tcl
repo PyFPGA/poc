@@ -10,6 +10,10 @@ add_files ../resources/constraints/zybo/led.xdc
 
 set_property top Top [current_fileset]
 
+set_property verilog_define {VIVADO=1 FREQ=125000000} [current_fileset]
+
+set_property "include_dirs" "../resources/verilog/path1 ../resources/verilog/path2" [current_fileset]
+
 set_property "generic" "BOO=1 INT=255 LOG=1'b1 VEC=8'b11111111 STR=WXYZ REA=1.1" -objects [get_filesets sources_1]
 
 reset_run synth_1

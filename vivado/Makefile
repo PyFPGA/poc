@@ -4,7 +4,7 @@ COMMAND=vivado -mode batch -notrace -quiet -source
 
 all: vhdl vlog
 
-vhdl vlog prog:
+vhdl vlog prog detect:
 	$(COMMAND) $@.tcl
 
 version:

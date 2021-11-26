@@ -13,6 +13,7 @@ add_files ../resources/constraints/zybo/clk.xdc
 add_files ../resources/constraints/zybo/led.xdc
 
 set_property top Top [current_fileset]
+
 set_property top_arch VIVADO [current_fileset]
 
 # NOTE: support to specify a REAL generic was added into the Vivado 2020.2 version
