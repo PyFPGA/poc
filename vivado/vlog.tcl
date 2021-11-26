@@ -2,9 +2,9 @@ create_project -force vlog-project
 
 set_property "part" xc7z010-1-clg400 [current_project]
 
-add_files ../hdl/blink.v
+add_files ../resources/verilog/blink.v
 
-add_files ../hdl/top.v
+add_files ../resources/verilog/top.v
 add_files ../resources/constraints/zybo/clk.xdc
 add_files ../resources/constraints/zybo/led.xdc
 

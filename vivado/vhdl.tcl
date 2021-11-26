@@ -2,13 +2,13 @@ create_project -force vhdl-project
 
 set_property "part" xc7z010-1-clg400 [current_project]
 
-add_files ../hdl/blink.vhdl
-set_property library blink_lib [get_files ../hdl/blink.vhdl]
+add_files ../resources/vhdl/blink.vhdl
+set_property library blink_lib [get_files ../resources/vhdl/blink.vhdl]
 
-add_files ../hdl/blink_pkg.vhdl
-set_property library blink_lib [get_files ../hdl/blink_pkg.vhdl]
+add_files ../resources/vhdl/blink_pkg.vhdl
+set_property library blink_lib [get_files ../resources/vhdl/blink_pkg.vhdl]
 
-add_files ../hdl/top.vhdl
+add_files ../resources/vhdl/top.vhdl
 add_files ../resources/constraints/zybo/clk.xdc
 add_files ../resources/constraints/zybo/led.xdc
 
