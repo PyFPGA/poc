@@ -13,12 +13,12 @@ add_files ../resources/constraints/zybo/clk.xdc
 add_files ../resources/constraints/zybo/led.xdc
 
 set_property top Top [current_fileset]
+set_property top_arch ARCH_SEL [current_fileset]
 
-set_property top_arch VIVADO [current_fileset]
+set GENERICS "FREQ=125000000 BOO=true INT=255 LOG=1'b1 VEC=8'b11111111 CHR=8'd90 STR=WXYZ REA=1.1 SKIP_ARCH=1"
+set_property "generic" $GENERICS -objects [get_filesets sources_1]
 
-# NOTE: support to specify a REAL generic was added into the Vivado 2020.2 version
-# https://forums.xilinx.com/t5/Vivado-TCL-Community/How-to-specify-a-REAL-generic-in-Vivado/m-p/1209088#M9581
-set_property "generic" "BOO=true INT=255 LOG=1'b1 VEC=8'b11111111 STR=WXYZ REA=1.1" -objects [get_filesets sources_1]
+set_property STEPS.SYNTH_DESIGN.ARGS.ASSERT true [get_runs synth_1]
 
 reset_run synth_1
 launch_runs synth_1
