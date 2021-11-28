@@ -12,3 +12,6 @@ VHDL:
   * As a workaround, I set SKIP_ARCH
 * Values are specified following Verilog notation.
   * In case of character, is needed to specify the ASCII value
+
+Verilog:
+* `$finish` is ignored, but fortunatly `$error("some text")` produces the desired result.

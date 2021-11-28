@@ -12,4 +12,4 @@ version:
 
 clean:
 	rm -fr *.bit *.cache *.hw *.runs *.xpr *.jou *.ip_user_files
-	rm -fr *.html *.log *.txt *.xml .Xil
+	rm -fr *.html *.log *.txt *.xml .Xil *.zip
