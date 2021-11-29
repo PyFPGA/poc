@@ -1,11 +1,11 @@
 #!/usr/bin/make
 
-DOCKER_CMD=docker run --rm -it -v $$HOME:$$HOME -w $$PWD ghdl/synth:beta
+COMMAND=docker run --rm -it -v $$HOME:$$HOME -w $$PWD ghdl/synth:beta bash
 
-COMMAND=bash
+all: vhdl vlog
 
 vlog vhdl:
-	$(DOCKER_CMD) $(COMMAND) $@.sh
+	$(COMMAND) $@.sh
 
 clean:
 	rm -fr *.cf
