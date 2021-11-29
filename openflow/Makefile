@@ -4,7 +4,7 @@ DOCKER_CMD=docker run --rm -it -v $$HOME:$$HOME -w $$PWD ghdl/synth:beta
 
 COMMAND=bash
 
-flow mix:
+mix:
 	$(COMMAND) $@.sh
 
 clean:

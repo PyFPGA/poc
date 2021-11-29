@@ -9,3 +9,5 @@ vlog vhdl:
 
 clean:
 	rm -fr *.cf
+	make -C icestorm clean
+	make -C trellis clean
