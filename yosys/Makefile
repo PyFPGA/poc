@@ -1,6 +1,6 @@
 #!/usr/bin/make
 
-COMMAND=docker run --rm -it -v $$HOME:$$HOME -w $$PWD ghdl/synth:beta bash
+COMMAND=docker run --rm -it -v $$HOME:$$HOME -w $$PWD hdlc/ghdl:yosys bash
 
 all: vhdl vlog
 
