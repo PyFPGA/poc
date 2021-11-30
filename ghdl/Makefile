@@ -1,11 +1,9 @@
 #!/usr/bin/make
 
-DOCKER_CMD=docker run --rm -it -v $$HOME:$$HOME -w $$PWD ghdl/synth:beta
-
-COMMAND=bash
+COMMAND=docker run --rm -it -v $$HOME:$$HOME -w $$PWD hdlc/ghdl:yosys bash
 
 vhdl:
-	$(DOCKER_CMD) $(COMMAND) $@.sh
+	$(COMMAND) $@.sh
 
 clean:
 	rm -fr *.cf
