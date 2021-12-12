@@ -2,12 +2,10 @@
 
 COMMAND=docker run --rm -it -v $$HOME:$$HOME -w $$PWD hdlc/ghdl:yosys bash
 
-all: vlog
+all: vhdl vhdl-top vlog-top
 
-vlog:
+vhdl vhdl-top vlog-top:
 	$(COMMAND) $@.sh
 
 clean:
 	rm -fr *.cf
-	make -C icestorm clean
-	make -C trellis clean
