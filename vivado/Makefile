@@ -2,7 +2,9 @@
 
 COMMAND=vivado -mode batch -notrace -quiet -source
 
-flow params:
+all: vhdl vlog
+
+vhdl vlog prog detect:
 	$(COMMAND) $@.tcl
 
 version:
@@ -10,4 +12,4 @@ version:
 
 clean:
 	rm -fr *.bit *.cache *.hw *.runs *.xpr *.jou *.ip_user_files
-	rm -fr *.html *.log *.txt *.xml .Xil
+	rm -fr *.html *.log *.txt *.xml .Xil *.zip
